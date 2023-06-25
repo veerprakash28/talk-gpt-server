@@ -24,4 +24,5 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/", talkGPTRouter);
+app.use("/talkgpt", talkGPTRouter);
 module.exports = app;
