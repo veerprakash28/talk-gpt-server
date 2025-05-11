@@ -5,6 +5,6 @@ const talkGPTRouter = Router();
 talkGPTRouter.get("/", (req, res) => {
   res.send("Server is up and running");
 });
-talkGPTRouter.post("/getGPTResponse", talkGPTController.getGPTReponse);
+talkGPTRouter.post("/getGPTResponse", talkGPTController.getGPTResponse);
 
 module.exports = talkGPTRouter;

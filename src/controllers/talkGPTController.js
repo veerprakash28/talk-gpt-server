@@ -1,26 +1,17 @@
-const { Configuration, OpenAIApi } = require("openai");
+const { GoogleGenAI } = require("@google/genai");
 
-const configuration = new Configuration({
-  apiKey: process.env.SECRET_KEY,
-});
-
-const openai = new OpenAIApi(configuration);
-module.exports.getGPTReponse = async (req, res, next) => {
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+module.exports.getGPTResponse = async (req, res, next) => {
   try {
     console.log(req.body);
     let prompt = `${req.body.prompt}`;
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: prompt,
-      temperature: 1.0,
-      max_tokens: 1000,
-      top_p: 0.0,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
     });
 
-    let gptResponse = response.data.choices[0].text;
-    gptResponse.replace(/\n/g, "");
+    let gptResponse = response.text;
+    gptResponse = gptResponse.replace(/\n/g, "");
 
     if (response) {
       return res.status(200).json({
@@ -28,13 +19,13 @@ module.exports.getGPTReponse = async (req, res, next) => {
         data: gptResponse,
       });
     } else {
-      throw err;
+      throw new Error("No response from Gemini API");
     }
   } catch (err) {
-    console.log("Something went Wrong", err);
-    res.send({
-      message: "Something went Wrong!",
-      err,
+    console.log("Something went wrong", err);
+    res.status(500).send({
+      message: "Something went wrong!",
+      err: err.message,
     });
   }
 };
